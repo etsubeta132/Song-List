@@ -1,0 +1,19 @@
+{
+  "name": "song_player_backend",
+  "version": "1.0.0",
+  "description": "a backend for song player website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Etsubdink Awoke",
+  "license": "ISC",
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.0.1",
+    "axios": "^1.6.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "nanoid": "^2.1.11",
+    "uuid": "^9.0.1"
+  }
+}
