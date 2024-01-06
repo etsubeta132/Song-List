@@ -1,82 +1,83 @@
-const express  = require('express');
-const axios = require('axios') ;
+const express = require('express');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
+const { connectToDatabase } = require('./db'); 
 
-
-const app = express()
+const app = express();
+const PORT = 3001;
 
 app.use(cors({
-    origin: 'http://localhost:3000',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  }));
-  
+  origin: 'http://localhost:3000',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+}));
 
-const PORT = 3001
+app.use(express.json());
 
-app.use(express.json())
+let db;
 
-const jsonPlaceholderUrl = 'https://jsonplaceholder.typicode.com';
 
-let songs = [
-    { id: uuidv4(), title: 'perfect', artist: 'edsheeren' ,imageUrl:'https://www.rollingstone.com/wp-content/uploads/2023/03/230117_Black_Tee_0005-1.jpg'},
-    { id: uuidv4(), title: 'story of my life', artist: 'Artist 2', imageUrl:'https://www.rollingstone.com/wp-content/uploads/2023/03/230117_Black_Tee_0005-1.jpg'},
-    { id: uuidv4(), title: 'Selina', artist: 'Tamrat',imageUrl:'https://www.rollingstone.com/wp-content/uploads/2023/03/230117_Black_Tee_0005-1.jpg'},
-    { id: uuidv4(), title: 'perfect', artist: 'edsheeren' ,imageUrl:'https://www.rollingstone.com/wp-content/uploads/2023/03/230117_Black_Tee_0005-1.jpg'},
-    { id: uuidv4(), title: 'story of my life', artist: 'Artist 2', imageUrl:'https://www.rollingstone.com/wp-content/uploads/2023/03/230117_Black_Tee_0005-1.jpg'},
-    { id: uuidv4(), title: 'Selina', artist: 'Tamrat',imageUrl:'https://www.rollingstone.com/wp-content/uploads/2023/03/230117_Black_Tee_0005-1.jpg'}
-  ];
-  
 
-app.get('/api/songs', (req, res) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Methods', 'GET');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
+connectToDatabase().then(database => {
+  db = database;
+});
+
+
+app.get('/api/songs', async (req, res) => {
+  try {
+    const songs = await db.collection('songs').find().toArray();
     res.json(songs);
-    console.log(songs);
+  } catch (error) {
+    console.error('Error fetching songs:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
+app.post('/api/songs', async (req, res) => {
+  try {
+    const newSong = { id: uuidv4(), ...req.body };
+    await db.collection('songs').insertOne(newSong);
+    res.status(201).json(newSong);
 
-app.post('/api/songs',(req,res)=>{
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Methods', 'POST');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    const newSong = {id:uuidv4(),...req.body}
-    songs.push(newSong)
-    res.status(201).json(newSong)
-    console.log(newSong)
+  } catch (error) {
+    console.error('Error creating song:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
-})
-
-app.put('/api/songs/:id',(req,res)=>{
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Methods', 'PUT');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    const {id} = req.params
-    const index = songs.findIndex((song)=> song.id === id)
-    console.log(index)
-    if (index != -1){
-        songs[index] = {...songs[index],...req.body}
-        res.json(songs[index])
-    }else{
-        res.status(404).json({error:'song not found'})
-    }
-})
-
-app.delete('/api/songs/:id', (req, res) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.header('Access-Control-Allow-Methods', 'DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-
+app.put('/api/songs/:id', async (req, res) => {
+  try {
     const { id } = req.params;
-    songs = songs.filter((song) => song.id !== id); 
-    res.json({ message: "Song deleted successfully" });
-    console.log("Song deleted successfully");
+    const result = await db.collection('songs').findOneAndUpdate(
+      { id },
+      { $set: req.body },
+      { returnDocument: 'after' }
+    );
+
+    res.json(result.value);
+  } catch (error) {
+    console.error('Error updating song:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
+app.delete('/api/songs/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await db.collection('songs').findOneAndDelete({ id });
+      if (result.value) {
+        res.json({ message: 'Song deleted successfully' });
+      } else {
+        res.status(404).json({ error: 'Song not found' });
+      }
+    } catch (error) {
+      console.error('Error deleting song:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
 
-app.listen(PORT,() => {
-    
-    console.log(`server is running on port ${PORT}`)
-})
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
