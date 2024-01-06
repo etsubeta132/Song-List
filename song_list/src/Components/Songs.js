@@ -35,6 +35,7 @@ function Songs() {
     if (selectedSong) {
       dispatch(updateSong({ id: selectedSong.id, ...data }));
     } else {
+     
       dispatch(addSong({ id, ...data }));
     }
 
@@ -48,12 +49,17 @@ function Songs() {
   };
 
   const handleRemove = (id) => {
+  
     dispatch(removeSong(id));
   };
+  
 
   const slicer = Math.ceil(songs.length / 2);
   const songs1 = songs.slice(0, slicer);
   const songs2 = songs.slice(slicer);
+
+
+
 
   return (
     <>

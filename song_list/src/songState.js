@@ -24,6 +24,7 @@ export const songSlice = createSlice({
       },
       updateSong: (state, action) => {
         const updatedSong = action.payload;
+        console.log(updateSong,"action update")
         const index = state.songs.findIndex((song) => song.id === updatedSong.id);
         if (index !== -1) {
           state.songs[index] = updatedSong;
