@@ -55,7 +55,7 @@ db.once('open', () => {
 
 
 
-app.get('/api/songs', async (req, res) => {
+app.get('/', async (req, res) => {
     try {
         const songs = await Song.find();
         res.json(songs);
