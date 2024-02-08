@@ -2,7 +2,7 @@
 import { call,takeEvery } from 'redux-saga/effects';
 
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = 'https://song-list-server.vercel.app';
 
 function* workAddSong(action) {
   try {
