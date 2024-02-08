@@ -11,7 +11,7 @@ const app = express();
 const PORT = 3001;
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://song-list-client.vercel.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 }));
