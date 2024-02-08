@@ -4,7 +4,7 @@ import { watchAddSong } from './watchAddSongSaga';
 import { watchUpdateSong } from './watchUpdateSongSaga';
 import { watchRemoveSong } from './watchRemoveSongSaga';
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = 'https://song-list-server.vercel.app';
 
 function* workgetSongsFetch() {
     try {
