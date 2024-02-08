@@ -1,6 +1,6 @@
 import { call, takeEvery } from 'redux-saga/effects';
 
-const API_BASE_URL = 'http://localhost:3001/api/songs';
+const API_BASE_URL = 'http://localhost:3001';
 
 function* workRemoveSong(action) {
   const song = action.payload;

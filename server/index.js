@@ -32,7 +32,7 @@ db.once('open', () => {
 
 
 
-app.get('/api/songs', async (req, res) => {
+app.get('/', async (req, res) => {
     try {
         const songs = await Song.find();
         res.json(songs);
@@ -43,7 +43,7 @@ app.get('/api/songs', async (req, res) => {
 });
 
 
-app.post('/api/songs', async (req, res) => {
+app.post('/', async (req, res) => {
     const { title, artist, imageUrl } = req.body;
     const songId = uuidv4(); 
 
@@ -67,7 +67,7 @@ app.post('/api/songs', async (req, res) => {
 
 
 
-app.put('/api/songs/:songId', async (req, res) => {
+app.put('/:songId', async (req, res) => {
     const { songId } = req.params;
     console.log(songId)
     const { title, artist, imageUrl } = req.body;
@@ -97,7 +97,7 @@ app.put('/api/songs/:songId', async (req, res) => {
   });
 
 
-  app.delete('/api/songs/:songId', async (req, res) => {
+  app.delete('/:songId', async (req, res) => {
     
     const { songId } = req.params;
     console.log(songId)
